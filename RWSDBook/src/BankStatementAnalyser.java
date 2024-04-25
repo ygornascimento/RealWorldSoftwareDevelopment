@@ -7,17 +7,20 @@ import java.util.List;
 
 public class BankStatementAnalyser {
     private static final String RESOURCES = "src/";
-    private static final BankStatementCSVParser bankStatementParser = new BankStatementCSVParser();
+
+    public void analyze(final String fileName, final BankStatementParser bankStatementParser) throws IOException {
+           final Path path = Paths.get(RESOURCES + fileName);
+           final List<String> lines = Files.readAllLines(path);
+           final List<BankTransaction> bankTransactions = bankStatementParser.parseLinesFrom(lines);
+           final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
+
+           collectSummary(bankStatementProcessor);
+    }
 
     public static void main(String[] args) throws IOException {
         final String fileName = "csv.csv";
         final Path path = Paths.get(RESOURCES + fileName);
         final List<String> lines = Files.readAllLines(path);
-
-        final List<BankTransaction> bankTransactions = bankStatementParser.parseLinesFromCSV(lines);
-        final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
-
-        collectSummary(bankStatementProcessor);
     }
 
     private static void collectSummary(final BankStatementProcessor bankStatementProcessor) {
